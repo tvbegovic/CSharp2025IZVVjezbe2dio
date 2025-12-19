@@ -74,7 +74,7 @@ namespace PredictionApp
         dateTo = dtTo;
       try
       {
-        //TODO: Pozvati sql upit za učitavanje utakmica iz baze podataka sa zadatim filterima (ne zaboraviti osvježiti grid)
+        
         string sql = @"SELECT m.Id, m.MatchDate, m.ProbHomeWin * 100 ProbHomeWin, m.ProbAwayWin * 100 ProbAwayWin, t1.Name HomeTeam, t2.Name AwayTeam, (1 - m.ProbHomeWin - m.ProbAwayWin) * 100 ProbDraw
         FROM Match m
         LEFT OUTER JOIN Team t1 ON m.HomeTeamId = t1.Id

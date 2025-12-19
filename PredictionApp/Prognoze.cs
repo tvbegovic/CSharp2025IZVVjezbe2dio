@@ -1,4 +1,5 @@
 ﻿
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,8 +29,22 @@ namespace PredictionApp
     {
       try
       {
-        //TODO: Pozvati sql upit za učitavanje prognoza iz baze podataka. Upit treba uključivati i filter po korisničkom imenu ako je uneseno u txtUser. Također, dohvatiti imena utakmica i tipova prognoza iz pripadajućih tablica
-      }
+				//TODO: Pozvati sql upit za učitavanje prognoza iz baze podataka. Upit treba uključivati i filter po korisničkom imenu ako je uneseno u txtUser. Također, dohvatiti imena utakmica i tipova prognoza iz pripadajućih tablica
+				string sql = @"SELECT TOP 100 p.*, CONCAT(t1.Name, ' - ', t2.Name, ' ', CONVERT(varchar(30),m.MatchDate,104)) AS Match, pt.Name AS PredictionType
+            FROM Prediction p
+            LEFT OUTER JOIN Match m ON p.MatchId = m.Id
+            LEFT OUTER JOIN Team t1 ON m.HomeTeamId = t1.Id
+            LEFT OUTER JOIN Team t2 ON m.AwayTeamId = t2.Id
+            LEFT OUTER JOIN PredictionType pt ON p.PredictionTypeId = pt.Id
+            WHERE (@userName IS NULL OR p.UserName LIKE CONCAT('%',@userName,'%'))
+            ORDER BY p.CreatedAt DESC";
+        using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString)) 
+        {
+          string userName = txtUser.Text;
+          prognoze = conn.Query<Prediction>(sql, new { userName }).ToList();
+          AzurirajGrid();
+        }
+			}
       catch (Exception ex)
       {
         MessageBox.Show("Greška pri učitavanju prognoza: " + ex.Message, "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -53,10 +68,14 @@ namespace PredictionApp
           {
 
 
-            //TODO: Pozvati sql upit za umetanje nove prognoze u bazu podataka i dohvatiti novi Id
-
-            //Zbog jednostavnosti, ponovno učitavamo sve prognoze iz baze nakon dodavanja nove (umjesto da samo dodajemo novi objekt u lokalnu listu) - zbog veza s drugim tablicama
-            UcitajPrognoze();
+						//TODO: Pozvati sql upit za umetanje nove prognoze u bazu podataka i dohvatiti novi Id
+						string sql = "INSERT INTO Prediction (MatchId, UserName, PredictionTypeId, CreatedAt) OUTPUT INSERTED.Id VALUES (@MatchId, @UserName, @PredictionTypeId, @CreatedAt)";
+						using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString))
+            {
+              conn.Execute(sql, p);
+            }
+							//Zbog jednostavnosti, ponovno učitavamo sve prognoze iz baze nakon dodavanja nove (umjesto da samo dodajemo novi objekt u lokalnu listu) - zbog veza s drugim tablicama
+							UcitajPrognoze();
             AzurirajGrid();
             
           }
@@ -100,11 +119,16 @@ namespace PredictionApp
           var p = dlg.Result;
           try
           {
-            
-              //TODO: Pozvati sql upit za ažuriranje postojeće prognoze u bazi podataka
 
-              // Ažuriraj lokalnu listu i grid
-              var item = prognoze.FirstOrDefault(x => x.Id == p.Id);
+						//TODO: Pozvati sql upit za ažuriranje postojeće prognoze u bazi podataka
+						string sql = "UPDATE Prediction SET MatchId = @MatchId, UserName = @UserName, PredictionTypeId = @PredictionTypeId, CreatedAt = @CreatedAt WHERE Id = @Id";
+            using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString)) 
+            {
+              conn.Execute(sql, p);
+            }
+
+							// Ažuriraj lokalnu listu i grid
+							var item = prognoze.FirstOrDefault(x => x.Id == p.Id);
               if (item != null)
               {
                 item.MatchId = p.MatchId;
@@ -143,7 +167,15 @@ namespace PredictionApp
       try
       {
         //TODO: Pozvati sql upit za brisanje prognoze iz baze podataka. Učitati ponovo listu prognoza nakon brisanja i osvježiti grid
-      }
+        string sql = "DELETE FROM Prediction WHERE id = @id";
+        using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString)) 
+        {
+          conn.Execute(sql, new { id = selectedId });
+        }
+        UcitajPrognoze();
+        AzurirajGrid();
+
+			}
       catch (Exception ex)
       {
         MessageBox.Show("Greška pri brisanju prognoze: " + ex.Message, "Greška", MessageBoxButtons.OK, MessageBoxIcon.Error);

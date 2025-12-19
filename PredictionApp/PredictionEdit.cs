@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -61,9 +62,14 @@ namespace PredictionApp
       {
        
           List<Match> items = new List<Match>();
-          //TODO: Učitati utakmice, pazi da se dohvate i imena timova iz pripadajuće tablice Team
+				
+				string sql = "SELECT m.Id, t1.Name AS HomeTeam, t2.Name AS AwayTeam, m.MatchDate FROM Match m LEFT JOIN Team t1 ON m.HomeTeamId = t1.Id LEFT JOIN Team t2 ON m.AwayTeamId = t2.Id ORDER BY m.MatchDate";
+        using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString)) 
+        {
+          items = conn.Query<Match>(sql).ToList();
+        }
 
-          var displayList = items.Select(m => new MatchItem { Match = m, Display = $"{m.MatchDate:g} - {m.HomeTeam} vs {m.AwayTeam}" }).ToList();
+					var displayList = items.Select(m => new MatchItem { Match = m, Display = $"{m.MatchDate:g} - {m.HomeTeam} vs {m.AwayTeam}" }).ToList();
           cmbMatch.DataSource = displayList;
           cmbMatch.DisplayMember = "Display";
           cmbMatch.ValueMember = "Match"; // ValueMember won't map to object, we'll get SelectedItem as MatchItem
@@ -81,8 +87,13 @@ namespace PredictionApp
       {
         
           List<PredictionType> types = new List<PredictionType>();
-          //TODO: Učitati tipove prognoza iz tablice PredictionType
-          cmbPredictionType.DataSource = types;
+        
+        string sql = "SELECT * FROM PredictionType";
+				using (SqlConnection conn = new SqlConnection(Properties.Settings.Default.connString))
+        {
+          types = conn.Query<PredictionType>(sql).ToList();
+        }
+					cmbPredictionType.DataSource = types;
           cmbPredictionType.DisplayMember = "Name";
           cmbPredictionType.ValueMember = "Id";
         
