@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PredictionApp", "Prediction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameshopWeb", "GameshopWeb\GameshopWeb.csproj", "{9DF69DD5-FD46-4DAE-9EB7-44EDC4302B20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineShopWeb", "OnlineShopWeb\OnlineShopWeb.csproj", "{FC28814F-3F6D-4DC7-8A8E-B73904FDCB33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9DF69DD5-FD46-4DAE-9EB7-44EDC4302B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DF69DD5-FD46-4DAE-9EB7-44EDC4302B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DF69DD5-FD46-4DAE-9EB7-44EDC4302B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC28814F-3F6D-4DC7-8A8E-B73904FDCB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC28814F-3F6D-4DC7-8A8E-B73904FDCB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC28814F-3F6D-4DC7-8A8E-B73904FDCB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC28814F-3F6D-4DC7-8A8E-B73904FDCB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

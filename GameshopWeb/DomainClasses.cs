@@ -17,6 +17,7 @@
 		public int? IdEmployee { get; set; }
 		public DateTime? DateOrdered { get; set; }
 		public DateTime? DateSent { get; set; }
+		public List<OrderDetail> Details { get; set; }
 	}
 	public class OrderDetail
 	{
